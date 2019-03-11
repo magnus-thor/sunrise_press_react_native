@@ -1,5 +1,12 @@
 import React from "react";
-import { StyleSheet, Text, View, FlatList, Button } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Button,
+  AsyncStorage
+} from "react-native";
 import { List, ListItem, Image } from "react-native-elements";
 import { getArticles } from "./services/fetchArticles";
 import LoginForm from "./Components/LoginForm";
@@ -12,9 +19,11 @@ export default class App extends React.Component {
       articles: [],
       articlesFetched: false,
       renderLoginForm: false,
+      user: "",
       email: "",
       password: "",
-      message: ""
+      message: "",
+      authenticated: false
     };
   }
 
@@ -53,21 +62,17 @@ export default class App extends React.Component {
   }
 
   async onLogin(e) {
-    console.log("CLICKED");
     let resp = await authenticate(this.state.email, this.state.password);
     if (resp.authenticated === true) {
-      this.setState({ authenticated: true });
+      this.setState({ authenticated: true, user: resp.user });
     } else {
       this.setState({ message: resp.message, renderLoginForm: false });
     }
   }
 
   renderLogin() {
-    let user;
-
     if (this.state.authenticated === true) {
-      user = JSON.parse(sessionStorage.getItem("credentials")).uid;
-      return <p>Hi {user}</p>;
+      return <Text>Hi {this.state.user}</Text>;
     } else {
       if (this.state.renderLoginForm === true) {
         return (
@@ -76,7 +81,6 @@ export default class App extends React.Component {
               loginHandler={this.onLogin.bind(this)}
               handleEmail={this.handleEmail}
               handlePassword={this.handlePassword}
-              // inputChangeHandler={this.onChange.bind(this)}
             />
           </View>
         );
@@ -103,7 +107,16 @@ export default class App extends React.Component {
   render() {
     let renderLogin = this.renderLogin();
 
-    return <View style={styles.container}>{renderLogin}</View>;
+    return (
+      <View style={styles.container}>
+        <FlatList
+          data={this.state.articles}
+          renderItem={this.renderArticles.bind(this)}
+          keyExtractor={(item, index) => index.toString()}
+        />
+        {renderLogin}
+      </View>
+    );
   }
 }
 

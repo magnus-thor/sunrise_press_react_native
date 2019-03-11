@@ -1,28 +1,38 @@
 import axios from "axios";
+import { AsyncStorage } from "react-native";
 
-const apiUrl = "http://localhost:3000/";
+// const apiUrl = "http://192.168.10.153:3000";
+const apiUrl = `https://ca-sunrise-rn.herokuapp.com`;
 
 const authenticate = async (email, password) => {
-  const path = apiUrl + "/auth/sign_in";
+  const path = apiUrl + "/api/auth/sign_in";
   try {
-    let response = await axios.post(path, { email: email, password: password });
+    let response = await axios.post(path, {
+      email: email,
+      password: password
+    });
     await storeAuthCredentials(response);
-    return { authenticated: true };
+    const user = response.data.data.name
+      ? response.data.data.name
+      : response.data.data.email;
+    return { authenticated: true, user: user };
   } catch (error) {
     console.log(error);
-    return { authenticated: false, message: error.response.data.errors[0] };
+    const message = error.response.data.errors[0]
+      ? error.response.data.errors[0]
+      : error.response.data.errors;
+    return { authenticated: false, message: message };
   }
 };
 
 const storeAuthCredentials = ({ data, headers }) => {
-  debugger;
   return new Promise(resolve => {
     const uid = headers["uid"],
       client = headers["client"],
       accessToken = headers["access-token"],
       expiry = headers["expiry"];
 
-    sessionStorage.setItem(
+    AsyncStorage.setItem(
       "credentials",
       JSON.stringify({
         uid: uid,
@@ -32,10 +42,7 @@ const storeAuthCredentials = ({ data, headers }) => {
         token_type: "Bearer"
       })
     );
-    sessionStorage.setItem(
-      "current_user",
-      JSON.stringify({ id: data.data.id })
-    );
+    AsyncStorage.setItem("current_user", JSON.stringify({ id: data.data.id }));
     resolve(true);
   });
 };
