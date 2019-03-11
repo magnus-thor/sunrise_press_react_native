@@ -46,6 +46,8 @@ export default class App extends React.Component {
     });
   }
 
+  showArticle(id) {}
+
   renderArticles(item) {
     const article = item.item;
     return (
@@ -57,6 +59,10 @@ export default class App extends React.Component {
         <Text>{article.category.name}</Text>
         <Text>{article.title}</Text>
         <Text>{article.description}</Text>
+        <Button
+          title="View Article"
+          onPress={() => this.showArticle(article.id)}
+        />
       </View>
     );
   }
