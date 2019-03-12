@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View, FlatList, Button } from "react-native";
 import { Image } from "react-native-elements";
-import { getArticles } from "../services/fetchArticles";
+import { GetArticles } from "../services/fetchArticles";
 import LoginForm from "./LoginForm";
 import { authenticate } from "../services/Auth";
 
@@ -28,7 +28,7 @@ export default class HomeScreen extends React.Component {
   }
 
   componentDidMount() {
-    getArticles().then(res => {
+    GetArticles().then(res => {
       this.updateStateHandler(res);
     });
   }
@@ -39,12 +39,14 @@ export default class HomeScreen extends React.Component {
     });
   }
 
-  showArticle(id) {}
+  showArticle(id) {
+    this.props.navigation.navigate("Article", {
+      articleID: id
+    });
+  }
 
   renderArticles(item) {
     const article = item.item;
-    console.log(article.image);
-    debugger;
     return (
       <View>
         <Image
