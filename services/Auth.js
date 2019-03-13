@@ -1,15 +1,15 @@
 import axios from "axios";
 import { AsyncStorage } from "react-native";
 
-// const apiUrl = "http://192.168.10.153:3000";
-const apiUrl = `https://ca-sunrise-rn.herokuapp.com`;
+const apiUrl = "http://192.168.1.178:3000";
+// const apiUrl = `https://ca-sunrise-rn.herokuapp.com`;
 
 const authenticate = async (email, password) => {
   const path = apiUrl + "/api/auth/sign_in";
   try {
     let response = await axios.post(path, {
-      email: email,
-      password: password
+      email: "johndoe@mail.com",
+      password: "password"
     });
     await storeAuthCredentials(response);
     const user = response.data.data.name
