@@ -17,7 +17,6 @@ export const GetArticle = async id => {
   // const url = `https://ca-sunrise-rn.herokuapp.com`;
   try {
     let response = await axios.get(url + "/api/articles/" + id);
-    debugger;
     const article = response.data.article;
     return article;
   } catch (error) {
